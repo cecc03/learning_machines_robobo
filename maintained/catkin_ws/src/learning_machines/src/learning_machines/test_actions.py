@@ -62,24 +62,25 @@ def test_sim(rob: SimulationRobobo):
     print("Orient the same after setting to itself: ", orient == rob.get_orientation())
 
 
-def test_hardware(rob: HardwareRobobo):
-    print("Phone battery level: ", rob.phone_battery())
-    print("Robot battery level: ", rob.robot_battery())
+def walk_until_obstacle(rob: IRobobo, steps: int = 400):
+    FRONT = [2, 3, 4, 5, 7]        
+    THRESHOLD = 80             
 
+    for _ in range(steps):
+        irs = rob.read_irs()
+        front = max((irs[i] for i in FRONT if irs[i]), default=0)
+        print("front:", round(front), "| all:", [round(v) if v else 0 for v in irs])
 
+        if front > THRESHOLD:
+            rob.move(-200, 200, 100) 
+            print("TURNING")  
+        else:
+            rob.move(50, 50, 100)
 def run_all_actions(rob: IRobobo):
     if isinstance(rob, SimulationRobobo):
         rob.play_simulation()
-    test_emotions(rob)
-    test_sensors(rob)
-    test_move_and_wheel_reset(rob)
-    if isinstance(rob, SimulationRobobo):
-        test_sim(rob)
 
-    if isinstance(rob, HardwareRobobo):
-        test_hardware(rob)
-
-    test_phone_movement(rob)
+    walk_until_obstacle(rob)       
 
     if isinstance(rob, SimulationRobobo):
         rob.stop_simulation()
