@@ -1,5 +1,5 @@
 import cv2
-
+from robobo_interface import IRobobo, SimulationRobobo, HardwareRobobo
 from data_files import FIGURES_DIR
 from robobo_interface import (
     IRobobo,
@@ -70,16 +70,10 @@ def test_hardware(rob: HardwareRobobo):
 def run_all_actions(rob: IRobobo):
     if isinstance(rob, SimulationRobobo):
         rob.play_simulation()
-    test_emotions(rob)
-    test_sensors(rob)
-    test_move_and_wheel_reset(rob)
-    if isinstance(rob, SimulationRobobo):
-        test_sim(rob)
 
-    if isinstance(rob, HardwareRobobo):
-        test_hardware(rob)
-
-    test_phone_movement(rob)
+    rob.move_blocking(50, 50, 1000)    # forward ~1s
+    rob.move_blocking(50, -50, 600)    # turn right
+    rob.move_blocking(50, 50, 1000)    # forward again
 
     if isinstance(rob, SimulationRobobo):
         rob.stop_simulation()
